@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <div id="input-container">
+        <figure class="powericon" id="nuclearIcon">
+                <img src="assets/nuclearicon.png" alt="nuclear-icon" class="iconimage">
+                <figcaption class="captiontext">Nuclear Plant</figcaption>
+        </figure>
+        <input class="numberinput" type="number" id="nuclearNumber">
+        <button class="inputButton" id="NuclearConstructButton" onclick="getNuclearCNum()">Construct</button>
+        <button class="inputButton" id="NuclearDecomissionButton" onclick="getNuclearDNum()">Decomission</button>
+        <div>
+            <label>Active: </label>
+            <label>Inactive: </label>
+        </div>
+        <div></div><div></div>
+        <div class="containerLine"></div>
+        <figure class="powericon" id="coalIcon">
+                <img src="assets/coalPlant.jpg" alt="coal-plant-icon" class="iconimage">
+                <figcaption class="captiontext">Coal Plant</figcaption>
+        </figure>
+        <input class="numberinput" type="number" id="coalNumber">
+        <button class="inputButton" id="coalConstructButton" onclick="getCoalCNum()">Construct</button>
+        <div id="doubleButton">
+            <button class="inputButton" id="coalDecomissionButton" onclick="getCoalDNum()">Decomission</button>
+            <button class="inputButton" id="coalToNuclearButton" onclick="getCoalNNum()">Convert To Nuclear</button>
+        </div>
+        <div>
+            <label>Active: </label>
+            <label>Inactive: </label>
+        </div>
+        <div></div><div></div>
+        <div class="containerLine"></div>
+        <figure class="powericon" id="gasIcon">
+                <img src="assets/naturalGasIcon.jpg" alt="natural-gas-icon" class="iconimage">
+                <figcaption class="captiontext">Natural Gas Plant</figcaption>
+        </figure>
+        <input class="numberinput" type="number" id="gasNumber">
+        <button class="inputButton" id="GasConstructButton" onclick="getGasCNum()">Construct</button>
+        <button class="inputButton" id="GasDecomissionButton" onclick="getGasDNum()">Decomission</button>
+        <div>
+            <label>Active: </label>
+            <label>Inactive: </label>
+        </div>
+        <div></div><div></div>
+        <div class="containerLine"></div>
+        <figure class="powericon" id="windIcon">
+                <img src="assets/windfarmincon.png" alt="wind-farm-icon" class="iconimage">
+                <figcaption class="captiontext">Windmill Plant</figcaption>
+        </figure>
+        <input class="numberinput" type="number" id="windNumber">
+        <button class="inputButton" id="windConstructButton" onclick="getWindCNum()">Construct</button>
+        <button class="inputButton" id="windDecomissionButton" onclick="getWindDNum()">Decomission</button>
+        <div>
+            <label>Active: </label>
+            <label>Inactive: </label>
+        </div>
+        <div></div><div></div>
+        <div class="containerLine"></div>
+        <figure class="powericon" id="solarIcon">
+                <img src="assets/solarfarmicon.svg" alt="solar-farm-icon" class="iconimage">
+                <figcaption class="captiontext">Solar Plant</figcaption>
+        </figure>
+        <input class="numberinput" type="number" id="solarNumber">
+        <button class="inputButton" id="SolarConstructButton" onclick="getSolarCNum()">Construct</button>
+        <button class="inputButton" id="SolarDecomissionButton" onclick="getSolarDNum()">Decomission</button>
+        <div>
+            <label>Active: </label>
+            <label>Inactive: </label>
+        </div>
+        <div></div><div></div>
+        <div class="containerLine"></div>
+        <figure class="powericon" id="batteryIcon">
+                <img src="assets/batteryicon.png" alt="battery-icon" class="iconimage">
+                <figcaption class="captiontext">Power Storage</figcaption>
+        </figure>
+        <input class="numberinput" type="number" id="batteryNumber">
+        <button class="inputButton" id="batteryConstructButton" onclick="getBatteryCNum()">Construct</button>
+        <button class="inputButton" id="batteryDecomissionButton" onclick="getBatteryDNum()">Decomission</button>
+        <div>
+            <label>Active: </label>
+            <label>Inactive: </label>
+        </div>
+        <div></div><div></div>
+        <div class="containerLine"></div>
+        
+
+        
+        
+
+        
+    </div>
+    
+</body>
+</html>
