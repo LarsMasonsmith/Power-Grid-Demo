@@ -1,16 +1,56 @@
-#input-container{
+#page-container{
     display: grid;
-    width: 350px;
-    height: 704px;
-    background-color: lightgray;
+    width: auto;
+    height: auto;
+    background-color: white;
     gap: 5px;
-    grid-template-columns: 100px 20px auto auto;
-    grid-template-rows: 50px 50px 3px 50px 50px 3px 50px 50px 3px 50px 50px 3px 50px 50px 3px 50px 50px 3px 50px 50px 3px;
+    grid-template-columns: 350px 400px;
+    grid-template-rows: auto;
+    justify-content: start;
+    align-content: start;
+    grid-auto-flow: column;
+    margin: 0px;
+    padding: 0;
+
+}
+
+#chart-column{
+    display: grid;
+    width: 600px;
+    height: 705px;
+    gap: 5px;
+    grid-template-columns: 500px;
+    grid-template-rows: 260px 350px;
     justify-content: start;
     align-content: start;
     grid-auto-flow: row;
     margin: 0px;
     padding: 0;
+    text-align: center;
+    font-size: large;
+
+
+}
+#input-container{
+    display: grid;
+    width: 360px;
+    height: 585px;
+    background-color: lightgray;
+    gap: 5px;
+    grid-template-columns: 100px 40px auto auto;
+    grid-template-rows: 50px 50px 3px 50px 50px 3px 50px 50px 3px 50px 50px 3px 50px 50px 3px 50px 50px 3px;
+    justify-content: start;
+    align-content: start;
+    grid-auto-flow: row;
+    margin: 0px;
+    padding: 0;
+}
+.chart{
+    width: 400px;
+    height: 300px;
+}
+.acInLabel{
+    white-space: nowrap;
 }
 #nuclearIcon{
     grid-row-start: 1;
@@ -81,7 +121,7 @@
     box-sizing: border-box;
     height: 20px;
     margin: auto;
-    width: 20px;
+    width: 40px;
     padding: 0;
 
 }
@@ -110,7 +150,7 @@
 #doubleButton{
     display: grid;
     grid-template-columns: auto;
-    grid-template-rows: 20px 40px;
+    grid-template-rows: 20px 26px 20px;
     margin-top: 15px;
 }
 .inputButton:hover{
