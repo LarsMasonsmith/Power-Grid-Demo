@@ -4,7 +4,7 @@
     height: auto;
     background-color: white;
     gap: 5px;
-    grid-template-columns: 350px 400px;
+    grid-template-columns: 350px 500px 500px;
     grid-template-rows: auto;
     justify-content: start;
     align-content: start;
@@ -29,6 +29,17 @@
     text-align: center;
     font-size: large;
 
+
+}
+#carbon-chart{
+    height: 500px;
+    margin: 0px;
+    padding: 0;
+    text-align: center;
+    font-size: large;
+    white-space: nowrap;
+    
+    
 
 }
 #input-container{
