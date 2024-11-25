@@ -1,6 +1,6 @@
 let activeNuclear = 5; //default 5
 let decomNuclear = 0;
-let activeCoal = 53; // should be 48
+let activeCoal = 53; // should be 53
 let decomCoal = 0;
 let activeCoalNuclear = 0;
 let activeGas = 179; //shouold be 158
@@ -15,7 +15,6 @@ let coalCost = [1200000000, 75000000]; //cost of new, cost of recomissioning
 let gasCost = [120000000, 500000];
 let windCost = [260000000, 100000];
 let solarCost = [65000000, 100000];
-
 let windCapacity = .2; //in million kilowatts
 let solarCapacity = .05;
 let coalCapacity = .3;
@@ -70,11 +69,7 @@ for(let i = 0; i<24; i++){
     overCapacityWinter.push(0);
 }
 
-// todo list:
-// add an information column because i am getting lazy
-// add a graphic that shows project cost, cost per kwh, and CO2 emissions per Kwh
-// make it so you can only add integers into menu
-// fix overcapacity distribution
+
 
 
 
@@ -106,8 +101,8 @@ function refresh(){
 
     document.getElementById("solarPlantsExisting").children[0].innerHTML = "Active: " + activeSolar;
     document.getElementById("solarPlantsExisting").children[2].innerHTML = "Inactive: " + decomSolar;
-    document.getElementById("costLabel").innerHTML = `Total Project Cost: $${totalCost}`
-    console.log('Project Cost: ' + totalCost)
+    document.getElementById("costLabel").innerHTML = `Total Project Cost: $${totalCost.toLocaleString()}`
+
 
 
     carbonOutputPerDay = 0;
@@ -118,8 +113,7 @@ function refresh(){
         carbonOutputPerDay += (activeNuclear * nuclearCarbon) + (activeCoalNuclear * coalCapacity * nuclearCarbon) + (activeCoal * coalCapacity * coalCarbon * coalCFOverall)
         + (activeGas * gasCapacity * gasCFOverall * gasCarbon) + (activeWind * windCapacity * windCFWinterOverall * windCarbon) + (activeSolar * solarCapacity * solarCFWinterOverall);
         carbonOutputPerDay = carbonOutputPerDay / 2;
-    document.getElementById("carbonLabel").innerHTML = `Current Carbon Output: ${Math.round(carbonOutputPerDay)} metric tons per GWHR`
-    console.log("carbon output in metric tons/GWHR: " + carbonOutputPerDay);
+    document.getElementById("carbonLabel").innerHTML = `Current Carbon Output: ${(Math.round(carbonOutputPerDay)).toLocaleString()} metric tons per Gigawatt hour`;
     for(let i = 0; i<24; i++){
         summerPowerOutputHourly[i] = 0;
         winterPowerOutputHourly[i] = 0;
@@ -130,28 +124,30 @@ function refresh(){
     gasUseSummer = [];
     let tempgasDailyCapacity = activeGas * gasCFOverall * gasCapacity * 24;
     let tempcoalDailyCapacity = (activeCoal * coalCapacity * coalCFOverall * 24);
-    for(let i=0; i<24; i++){
+    gasUseSummer = [];
+    coalUseWinter = [];
+    for(let i=0; i<24; i++){ 
         if(summerBaseLoad[i] >= summerPowerDraw[i]){
             summerPowerOutputHourly[i] += summerBaseLoad[i];
             gasUseSummer.push(0);
             coalUseSummer.push(0);
+            
         }
-        else if(summerPowerDraw[i] - summerBaseLoad[i] <= activeGas * gasCapacity && summerPowerDraw[i] - summerBaseLoad[i] < tempgasDailyCapacity){
+        else if(summerPowerDraw[i] - summerBaseLoad[i] < activeGas * gasCapacity && summerPowerDraw[i] - summerBaseLoad[i] < tempgasDailyCapacity){
             summerPowerOutputHourly[i] = summerPowerDraw[i];
-            tempgasDailyCapacity = subtractToZero(summerPowerDraw[i], summerBaseLoad[i]);
+            tempgasDailyCapacity -= subtractToZero(summerPowerDraw[i], summerBaseLoad[i]);
             gasUseSummer.push(summerPowerDraw[i] - summerBaseLoad[i]);
             coalUseSummer.push(0);
             
-
         }
-        else if(summerPowerDraw[i] - summerBaseLoad[i] < (activeGas * gasCapacity) + (activeCoal * coalCapacity) && summerPowerDraw[i] - summerBaseLoad[i] < tempgasDailyCapacity + tempcoalDailyCapacity){
+        else if(summerPowerDraw[i] - summerBaseLoad[i] < activeGas * gasCapacity + activeCoal * coalCapacity && summerPowerDraw[i] - summerBaseLoad[i] < tempgasDailyCapacity + tempcoalDailyCapacity){
             summerPowerOutputHourly[i] = summerPowerDraw[i];
             tempgasDailyCapacity = subtractToZero(tempgasDailyCapacity, (activeGas * gasCapacity));
             tempcoalDailyCapacity = subtractToZero(tempcoalDailyCapacity, subtractToZero((summerPowerDraw[i] - summerBaseLoad[i]), (activeGas * gasCapacity)));
             gasUseSummer.push((activeGas * gasCapacity));
             coalUseSummer.push((summerPowerDraw[i] - summerBaseLoad[i]) - (activeGas * gasCapacity));
+            // also problem here
         }
-        
         else{
             summerPowerOutputHourly[i] += summerBaseLoad[i];
             if (tempgasDailyCapacity > 0){
@@ -164,9 +160,15 @@ function refresh(){
                 }
                 else{
                     summerPowerOutputHourly[i] += (activeGas * gasCapacity);
+                    console.log((activeGas * gasCapacity))
+                    console.log("active gas: " + activeGas)
+                    console.log("gas Capacity: " + gasCapacity)
                     tempgasDailyCapacity = subtractToZero(tempgasDailyCapacity, (activeGas * gasCapacity));
                     gasUseSummer.push((activeGas * gasCapacity));
                 }
+            }
+            else{
+                gasUseSummer.push(0);
             }
             
             if(tempcoalDailyCapacity > 0){
@@ -182,50 +184,59 @@ function refresh(){
                     
                 }
             }
+            else{
+                coalUseSummer.push(0)
+            }
             
         }
-
-        
         
         
     }
-
-    
+    console.log(summerPowerOutputHourly)
+    let maxAddCoalSummer = 0;
+    let maxAddGasSummer = 0;
     for(let i=0; i<24; i++){
-        let maxAddGasSummer = 0;
-        for(let x=0; x<24;x++){
-            maxAddGasSummer += ((activeGas * gasCapacity) - summerPowerDraw[x])
-        }
-        if (gasUseSummer[i] < (activeGas * gasCapacity) && tempgasDailyCapacity > 0){
-            overCapacitySummer[i] = (((activeGas * gasCapacity) - summerPowerDraw[i]) / maxAddGasSummer) * tempgasDailyCapacity;
-        }
-        let maxAddCoalSummer = 0;
-        for(let x=0; x<24;x++){
-            maxAddCoalSummer += ((activeCoal * coalCapacity) - summerPowerDraw[x])
-        }
-        if (coalUseSummer[i] < (activeCoal * coalCapacity) && tempcoalDailyCapacity > 0){
-            overCapacitySummer[i] = (((activeCoal * coalCapacity) - summerPowerDraw[i]) / maxAddCoalSummer) * tempcoalDailyCapacity;
-        }
+        maxAddGasSummer += ((activeGas * gasCapacity) - gasUseSummer[i]);
     }
+    for(let x=0; x<24;x++){
+        maxAddCoalSummer += ((activeCoal * coalCapacity) - coalUseSummer[x]);
+    }
+    overCapacitySummer = [];
     for(let i=0;i<24;i++){
-        summerPowerOutputHourly[i] += overCapacitySummer[i];
+        overCapacitySummer.push(0)
     }
+    for(let i=0; i<24; i++){    
+        if (gasUseSummer[i] < (activeGas * gasCapacity) && tempgasDailyCapacity > 0){
+            overCapacitySummer[i] = ((((activeGas * gasCapacity) - gasUseSummer[i]) / maxAddGasSummer) * tempgasDailyCapacity);
+        }
+        else{
+            overCapacitySummer[i] = 0;
+        }
+        
+        if (coalUseSummer[i] < (activeCoal * coalCapacity) && tempcoalDailyCapacity > 0){
+            overCapacitySummer[i] = ((((activeCoal * coalCapacity) - coalUseSummer[i]) / maxAddCoalSummer) * tempcoalDailyCapacity);
+        }
+        
+    }
+    console.log(overCapacitySummer)
+    for(let i=0;i<24;i++){summerPowerOutputHourly[i] += overCapacitySummer[i];}
     tempgasDailyCapacity = activeGas * gasCFOverall * gasCapacity * 24;
     tempcoalDailyCapacity = (activeCoal * coalCapacity * coalCFOverall * 24);
-    for(let i=0; i<24; i++){
-        
+    gasUseWinter = [];
+    coalUseWinter = [];
+    for(let i=0; i<24; i++){ 
         if(winterBaseLoad[i] >= winterPowerDraw[i]){
             winterPowerOutputHourly[i] += winterBaseLoad[i];
             gasUseWinter.push(0);
             coalUseWinter.push(0);
+            
         }
         else if(winterPowerDraw[i] - winterBaseLoad[i] < activeGas * gasCapacity && winterPowerDraw[i] - winterBaseLoad[i] < tempgasDailyCapacity){
             winterPowerOutputHourly[i] = winterPowerDraw[i];
-            tempgasDailyCapacity = subtractToZero(winterPowerDraw[i], winterBaseLoad[i]);
+            tempgasDailyCapacity -= subtractToZero(winterPowerDraw[i], winterBaseLoad[i]);
             gasUseWinter.push(winterPowerDraw[i] - winterBaseLoad[i]);
             coalUseWinter.push(0);
             
-
         }
         else if(winterPowerDraw[i] - winterBaseLoad[i] < activeGas * gasCapacity + activeCoal * coalCapacity && winterPowerDraw[i] - winterBaseLoad[i] < tempgasDailyCapacity + tempcoalDailyCapacity){
             winterPowerOutputHourly[i] = winterPowerDraw[i];
@@ -233,6 +244,7 @@ function refresh(){
             tempcoalDailyCapacity = subtractToZero(tempcoalDailyCapacity, subtractToZero((winterPowerDraw[i] - winterBaseLoad[i]), (activeGas * gasCapacity)));
             gasUseWinter.push((activeGas * gasCapacity));
             coalUseWinter.push((winterPowerDraw[i] - winterBaseLoad[i]) - (activeGas * gasCapacity));
+            // also problem here
         }
         else{
             winterPowerOutputHourly[i] += winterBaseLoad[i];
@@ -246,9 +258,12 @@ function refresh(){
                 }
                 else{
                     winterPowerOutputHourly[i] += (activeGas * gasCapacity);
-                    tempgasDailyCapacity = subtractToZero(tempcoalDailyCapacity, (activeGas * gasCapacity));
+                    tempgasDailyCapacity = subtractToZero(tempgasDailyCapacity, (activeGas * gasCapacity));
                     gasUseWinter.push((activeGas * gasCapacity));
                 }
+            }
+            else{
+                gasUseWinter.push(0);
             }
             
             if(tempcoalDailyCapacity > 0){
@@ -264,30 +279,43 @@ function refresh(){
                     
                 }
             }
+            else{
+                coalUseWinter.push(0)
+            }
             
         }
         
         
     }
+    console.log(winterPowerOutputHourly)
+    let maxAddCoalWinter = 0;
+    let maxAddGasWinter = 0;
     for(let i=0; i<24; i++){
-        let maxAddGasWinter = 0;
-        for(let x=0; x<24;x++){
-            maxAddGasWinter += ((activeGas * gasCapacity) - winterPowerDraw[x])
-        }
-        if (gasUseWinter[i] < (activeGas * gasCapacity) && tempgasDailyCapacity > 0){
-            overCapacityWinter[i] = (((activeGas * gasCapacity) - winterPowerDraw[i]) / maxAddGasWinter) * tempgasDailyCapacity;
-        }
-        let maxAddCoalWinter = 0;
-        for(let x=0; x<24;x++){
-            maxAddCoalWinter += ((activeCoal * coalCapacity) - winterPowerDraw[x])
-        }
-        if (coalUseWinter[i] < (activeCoal * coalCapacity) && tempcoalDailyCapacity > 0){
-            overCapacityWinter[i] = (((activeCoal * coalCapacity) - winterPowerDraw[i]) / maxAddCoalWinter) * tempcoalDailyCapacity;
-        }
+        maxAddGasWinter += ((activeGas * gasCapacity) - gasUseWinter[i]);
     }
+    for(let x=0; x<24;x++){
+        maxAddCoalWinter += ((activeCoal * coalCapacity) - coalUseWinter[x]);
+    }
+    overCapacityWinter = [];
     for(let i=0;i<24;i++){
-        winterPowerOutputHourly[i] += overCapacityWinter[i];
+        overCapacityWinter.push(0)
     }
+    for(let i=0; i<24; i++){    
+        if (gasUseWinter[i] < (activeGas * gasCapacity) && tempgasDailyCapacity > 0){
+            overCapacityWinter[i] = ((((activeGas * gasCapacity) - gasUseWinter[i]) / maxAddGasWinter) * tempgasDailyCapacity);
+        }
+        else{
+            overCapacityWinter[i] = 0;
+        }
+        
+        if (coalUseWinter[i] < (activeCoal * coalCapacity) && tempcoalDailyCapacity > 0){
+            overCapacityWinter[i] = ((((activeCoal * coalCapacity) - coalUseWinter[i]) / maxAddCoalWinter) * tempcoalDailyCapacity);
+        }
+        
+    }
+    console.log(overCapacityWinter)
+    for(let i=0;i<24;i++){winterPowerOutputHourly[i] += overCapacityWinter[i];}
+    
     summerChartC.update();
     winterChartC.update();
     
@@ -340,7 +368,7 @@ var summerChartC = new Chart(summerChartCCTX, {
                 },
                 scaleLabel: {
                     display: true,
-                    labelString: "Million Kilowatt Hours",
+                    labelString: "Gigawatt Hours",
                 }
             }],
             xAxes: [{
@@ -381,7 +409,7 @@ var winterChartC = new Chart(winterChartCCTX, {
                 },
                 scaleLabel: {
                     display: true,
-                    labelString: "Million Kilowatt Hours",
+                    labelString: "Gigawatt Hours",
                 }
             }],
             xAxes: [{
